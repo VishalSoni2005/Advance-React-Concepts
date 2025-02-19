@@ -1,10 +1,8 @@
-
 export default function ContextPra() {
   return (
     <div>
-        
-        
-        
-        ContextPra</div>
-  )
+      ContextPra
+      <h1>helo</h1>
+    </div>
+  );
 }
