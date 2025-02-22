@@ -9,7 +9,14 @@ const connectDB = require('./Config/db');
 connectDB;
 
 // middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:5173', 
+    credentials: true, //! Allow cookies to be sent
+  })
+);
+
+app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

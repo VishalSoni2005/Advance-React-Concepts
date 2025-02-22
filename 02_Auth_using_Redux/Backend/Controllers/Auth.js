@@ -46,7 +46,6 @@ const signup = async (req, res) => {
     const token = jwt.sign(payload, 'vishal', { expiresIn: '1hr' });
 
     res.cookie('token', token);
-
     res.status(201).json({
       token,
       success: true,
