@@ -10,8 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mantine/core": "^7.17.0",
+    "@mantine/dates": "^7.17.0",
+    "@mantine/form": "^7.17.0",
+    "@mantine/hooks": "^7.17.0",
+    "@mantinex/dev-icons": "^1.1.0",
     "@reduxjs/toolkit": "^2.5.1",
     "@tailwindcss/vite": "^4.0.7",
+    "axios": "^1.7.9",
+    "dayjs": "^1.11.13",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-redux": "^9.2.0",
@@ -27,6 +34,9 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.18",
     "globals": "^15.14.0",
+    "postcss": "^8.5.3",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.22.0",
     "vite": "^6.1.0"
