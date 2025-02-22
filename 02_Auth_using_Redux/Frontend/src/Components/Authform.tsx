@@ -18,17 +18,17 @@ import { GoogleButton } from './GoogleButton';
 import { TwitterButton } from './TwitterButton';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
-import { setToken } from '../Redux/Slice';
+import { signup } from '../Redux/Slice';
 
 interface AuthenticationFormProps extends PaperProps {
   type: 'signin' | 'signup';
 }
-
 export function AuthenticationForm({
   type,
   ...props
 }: AuthenticationFormProps) {
   const dispatch = useDispatch();
+
   const form = useForm({
     initialValues: {
       email: '',
@@ -45,9 +45,8 @@ export function AuthenticationForm({
     //         : null,
   });
 
-
   const handleFormSubmit = async () => {
-    console.log(form.values);
+    // console.log(form.values);
 
     const { name, email, password } = form.values;
     const formData = {
@@ -68,9 +67,11 @@ export function AuthenticationForm({
       const access_token = requestToBackend.data.token;
 
       // const token = access_token.split('=')[1];
-      const token = access_token.split('=')[1]
+      console.log('Token from backend:', access_token);
+      // document.cookie = `token=${token}`;
+      // window.location.reload();
 
-      dispatch(setToken(token));
+      dispatch(signup(access_token));
       navigate('/');
     } catch (error) {
       console.error('Error during signup:', error);

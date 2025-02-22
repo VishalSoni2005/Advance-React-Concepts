@@ -11,15 +11,6 @@ const App: React.FC = () => {
   return (
     <MantineProvider>
       <Navbar />
-      {/* <Routes>
-        <Route path="/" element={<Navbar />}>
-          <Route index element={<Home />} />
-          <Route path="/signin" element={<Authform type="signin" />} />
-          <Route path="/signup" element={<Authform type="signup" />} />
-        </Route>
-      </Routes> */}
-
-      {/* Routes render below the Navbar */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<Authform type="signin" />} />
