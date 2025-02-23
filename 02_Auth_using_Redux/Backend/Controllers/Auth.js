@@ -41,16 +41,25 @@ const signup = async (req, res) => {
     const payload = {
       name: newUser.name,
       email: newUser.email,
+
     };
 
     const token = jwt.sign(payload, 'vishal', { expiresIn: '1hr' });
 
-    res.cookie('token', token);
+    res.cookie('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    // console.log('Token from backend :', token);
+
     res.status(201).json({
       token,
       success: true,
       message: 'User registered successfully',
-      user: { id: newUser._id, name, email },
+      user: { id: newUser._id, name, email, profile_img: newUser.profile_img },
     });
   } catch (error) {
     console.error(error);
@@ -94,7 +103,13 @@ const signin = async (req, res) => {
       email: user.email,
     };
     const token = jwt.sign(payload, 'vishal', { expiresIn: '1hr' });
-    res.cookie('token', token);
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
 
     // Return formatted user data
     res.json({
