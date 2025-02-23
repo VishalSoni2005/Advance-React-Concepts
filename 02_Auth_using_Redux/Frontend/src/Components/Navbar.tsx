@@ -8,7 +8,7 @@ import { logout } from '../Redux/Slice';
 const Navbar: React.FC = () => {
   //todo: note state is stored in store
   const token = useSelector((state: RootState) => state.auth.token);
- //  console.log('Token from Redux store:', token);
+  //  console.log('Token from Redux store:', token);
 
   const dispatch = useDispatch();
 

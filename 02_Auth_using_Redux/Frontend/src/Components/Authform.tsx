@@ -16,9 +16,14 @@ import { useForm } from '@mantine/form';
 import { upperFirst } from '@mantine/hooks';
 import { GoogleButton } from './GoogleButton';
 import { TwitterButton } from './TwitterButton';
+
+
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
-import { signin, signup } from '../Redux/Slice';
+
+
+import { addUser, signin, signup } from '../Redux/Slice';
+
 import Cookies from 'js-cookie';
 
 interface AuthenticationFormProps extends PaperProps {
@@ -39,13 +44,6 @@ export function AuthenticationForm({
       password: '',
       terms: true,
     },
-    // validate: {
-    //   email: (value) => (/^\S+@\S+\.\S+$/.test(value) ? null : 'Invalid email'),
-    //   password: (value) =>
-    //     value.length >= 6 ? null : 'Password must be at least 6 characters',
-    //   terms: (value) =>
-    //     type === 'signup' && !value ? 'You must accept the terms' : null,
-    // },
   });
 
   const userAuthThroughServer = async (
@@ -56,17 +54,18 @@ export function AuthenticationForm({
       const response = await axios.post(
         `http://localhost:3000/${route}`,
         data,
-        {
-          withCredentials: true, // Ensures cookies are sent
-        }
+        { withCredentials: true }
       );
 
       const { token } = response.data; // Extract token from response
+      const { email } = response.data; // Extract name and email from response
 
       if (token) {
         dispatch(route === 'signin' ? signin(token) : signup(token));
+        dispatch(addUser({ email }));
         Cookies.set('authToken', token, { expires: 7 });
         navigate('/interface');
+   
       }
     } catch (error) {
       console.error(`Error during ${route}:`, error);
@@ -75,8 +74,8 @@ export function AuthenticationForm({
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-      const serverRoute = type === 'signin' ? 'signin' : 'signup';
-      userAuthThroughServer(serverRoute, form.values);
+    const serverRoute = type === 'signin' ? 'signin' : 'signup';
+    userAuthThroughServer(serverRoute, form.values);
   };
 
   return (
