@@ -18,16 +18,19 @@ import { GoogleButton } from './GoogleButton';
 import { TwitterButton } from './TwitterButton';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
-import { signup } from '../Redux/Slice';
+import { signin, signup } from '../Redux/Slice';
+import Cookies from 'js-cookie';
 
 interface AuthenticationFormProps extends PaperProps {
   type: 'signin' | 'signup';
 }
+
 export function AuthenticationForm({
   type,
   ...props
 }: AuthenticationFormProps) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const form = useForm({
     initialValues: {
@@ -36,54 +39,51 @@ export function AuthenticationForm({
       password: '',
       terms: true,
     },
-
-    //   validate: {
-    //     email: (val) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
-    //     password: (val) =>
-    //       val.length <= 6
-    //         ? 'Password should include at least 6 characters'
-    //         : null,
+    // validate: {
+    //   email: (value) => (/^\S+@\S+\.\S+$/.test(value) ? null : 'Invalid email'),
+    //   password: (value) =>
+    //     value.length >= 6 ? null : 'Password must be at least 6 characters',
+    //   terms: (value) =>
+    //     type === 'signup' && !value ? 'You must accept the terms' : null,
+    // },
   });
 
-  const handleFormSubmit = async () => {
-    // console.log(form.values);
-
-    const { name, email, password } = form.values;
-    const formData = {
-      name,
-      email,
-      password,
-    };
-
+  const userAuthThroughServer = async (
+    route: string,
+    data: typeof form.values
+  ) => {
     try {
-      const requestToBackend = await axios.post(
-        'http://localhost:3000/signup',
-        formData,
+      const response = await axios.post(
+        `http://localhost:3000/${route}`,
+        data,
         {
-          withCredentials: true, // Include credentials (cookies) in the request
+          withCredentials: true, // Ensures cookies are sent
         }
       );
 
-      const access_token = requestToBackend.data.token;
+      const { token } = response.data; // Extract token from response
 
-      // const token = access_token.split('=')[1];
-      console.log('Token from backend:', access_token);
-      // document.cookie = `token=${token}`;
-      // window.location.reload();
-
-      dispatch(signup(access_token));
-      navigate('/');
+      if (token) {
+        dispatch(route === 'signin' ? signin(token) : signup(token));
+        Cookies.set('authToken', token, { expires: 7 });
+        navigate('/interface');
+      }
     } catch (error) {
-      console.error('Error during signup:', error);
+      console.error(`Error during ${route}:`, error);
     }
   };
 
-  const navigate = useNavigate();
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+      const serverRoute = type === 'signin' ? 'signin' : 'signup';
+      userAuthThroughServer(serverRoute, form.values);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-500">
       <Paper radius="md" p="xl" withBorder {...props}>
         <Text size="lg" fw={500}>
-          Welcome, {type} with
+          Welcome, {upperFirst(type)} with
         </Text>
 
         <Group grow mb="md" mt="md">
@@ -97,16 +97,13 @@ export function AuthenticationForm({
           my="lg"
         />
 
-        <form onSubmit={form.onSubmit(handleFormSubmit)}>
+        <form onSubmit={handleFormSubmit}>
           <Stack>
             {type === 'signup' && (
               <TextInput
                 label="Name"
                 placeholder="Your name"
-                value={form.values.name}
-                onChange={(event) =>
-                  form.setFieldValue('name', event.currentTarget.value)
-                }
+                {...form.getInputProps('name')}
                 radius="md"
               />
             )}
@@ -114,12 +111,8 @@ export function AuthenticationForm({
             <TextInput
               required
               label="Email"
-              placeholder="hello@mantine.dev"
-              value={form.values.email}
-              onChange={(event) =>
-                form.setFieldValue('email', event.currentTarget.value)
-              }
-              error={form.errors.email && 'Invalid email'}
+              placeholder="hello@example.com"
+              {...form.getInputProps('email')}
               radius="md"
             />
 
@@ -127,24 +120,14 @@ export function AuthenticationForm({
               required
               label="Password"
               placeholder="Your password"
-              value={form.values.password}
-              onChange={(event) =>
-                form.setFieldValue('password', event.currentTarget.value)
-              }
-              error={
-                form.errors.password &&
-                'Password should include at least 6 characters'
-              }
+              {...form.getInputProps('password')}
               radius="md"
             />
 
             {type === 'signup' && (
               <Checkbox
                 label="I accept terms and conditions"
-                checked={form.values.terms}
-                onChange={(event) =>
-                  form.setFieldValue('terms', event.currentTarget.checked)
-                }
+                {...form.getInputProps('terms', { type: 'checkbox' })}
               />
             )}
           </Stack>

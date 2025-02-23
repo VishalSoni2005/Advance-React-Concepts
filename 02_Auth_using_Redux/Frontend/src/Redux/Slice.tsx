@@ -1,6 +1,5 @@
-//! step one : create Slice
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 
 interface AuthState {
   token: string | null;
@@ -8,34 +7,31 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  token: cookies.get('token') || null,
-  isAuthenticated: !!cookies.get('token'),
+  token: Cookies.get('authToken') || null, // Load from cookies
+  isAuthenticated: !!Cookies.get('authToken'),
 };
 
 const authSlice = createSlice({
-  name: 'auth', // name of the slice
+  name: 'auth',
   initialState,
   reducers: {
-    signin: (state, action: PayloadAction<string>) => {
-      state.token = action.payload;
-      state.isAuthenticated = true;
-      cookies.set('token', action.payload, { expires: 7 });
-    },
     signup: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
       state.isAuthenticated = true;
-      cookies.set('token', action.payload, { expires: 7 });
+      Cookies.set('authToken', action.payload, { expires: 7 }); // Store in cookies
+    },
+    signin: (state, action: PayloadAction<string>) => {
+      state.token = action.payload;
+      state.isAuthenticated = true;
+      Cookies.set('authToken', action.payload, { expires: 7 }); // Store in cookies
     },
     logout: (state) => {
       state.token = null;
       state.isAuthenticated = false;
-      cookies.remove('token');
+      Cookies.remove('authToken'); // Remove token
     },
   },
 });
 
-//! step two : export actions
-export const { signin, signup, logout } = authSlice.actions;
-
-//! step three : export reducer
+export const { signup, logout, signin } = authSlice.actions;
 export default authSlice.reducer;
