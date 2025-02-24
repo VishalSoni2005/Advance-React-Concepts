@@ -8,7 +8,7 @@ import '@mantine/core/styles.css';
 
 import { MantineProvider } from '@mantine/core';
 import Interface from './Pages/01_Interface.tsx';
-import Dashboard from './Pages/02_Dashboard.tsx';
+import Dashboard from './Pages/02_Dashboard.js';
 
 const App: React.FC = () => {
   return (
