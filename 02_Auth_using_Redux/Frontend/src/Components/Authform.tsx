@@ -58,11 +58,15 @@ export function AuthenticationForm({
       );
 
       const { token } = response.data; // Extract token from response
-      const { email } = response.data; // Extract name and email from response
+      const { email, name, profile_img } = response.data.user; // Extract name and email from response
 
+      console.log(response.data);
+      console.log(name);
+            
+      
       if (token) {
         dispatch(route === 'signin' ? signin(token) : signup(token));
-        dispatch(addUser({ email }));
+        dispatch(addUser({name, email, profile_img})); 
         Cookies.set('authToken', token, { expires: 7 });
         navigate('/interface');
    

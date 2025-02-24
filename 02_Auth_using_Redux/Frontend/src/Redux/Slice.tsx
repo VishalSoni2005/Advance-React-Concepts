@@ -75,24 +75,25 @@
 
 // export default rootReducer;
 
-
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
 
 interface AuthState {
   token: string | null;
+  email: string | null;
   isAuthenticated: boolean;
 }
 
-const initialState: AuthState = {
+const initialAuthState: AuthState = {
   token: Cookies.get('authToken') || null, // Load token from cookies
   isAuthenticated: !!Cookies.get('authToken'),
+  email: Cookies.get('userEmail') || null,
 };
 
 // Authentication Slice
 const authSlice = createSlice({
   name: 'auth',
-  initialState,
+  initialState: initialAuthState,
   reducers: {
     signup: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
@@ -106,6 +107,7 @@ const authSlice = createSlice({
     },
     logout: (state) => {
       state.token = null;
+      state.email = '';
       state.isAuthenticated = false;
       Cookies.remove('authToken');
       Cookies.remove('userEmail'); // Clear email on logout
@@ -115,11 +117,14 @@ const authSlice = createSlice({
 
 interface UserState {
   email: string;
+  profile_img: string;
+  name: string;
 }
 
-// Load email from cookies (optional for persistence)
 const initialStateUser: UserState = {
-  email: Cookies.get('userEmail') || '',
+  email: Cookies.get('email') || '',
+  name: '',
+  profile_img: '',
 };
 
 // User Slice
@@ -127,13 +132,19 @@ const userSlice = createSlice({
   name: 'user',
   initialState: initialStateUser,
   reducers: {
-    addUser: (state, action: PayloadAction<{ email: string }>) => {
+    addUser: (
+      state,
+      action: PayloadAction<{ name: string; email: string; profile_img: string }>
+    ) => {
       state.email = action.payload.email;
-      Cookies.set('userEmail', action.payload.email, { expires: 7 }); // Persist email
+      state.name = action.payload.name;
+      state.profile_img = action.payload.profile_img;
+      Cookies.set('email', action.payload.email, { expires: 7 }); // Persist email
     },
     deleteUser: (state) => {
       state.email = '';
-      Cookies.remove('userEmail');
+      state.name = '';
+      Cookies.remove('email'); // Clear email on logout
     },
   },
 });

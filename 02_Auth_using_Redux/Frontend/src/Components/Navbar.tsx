@@ -32,6 +32,10 @@ const Navbar: React.FC = () => {
                 <Button variant="subtle">Interface</Button>
               </Link>
 
+              <Link to="/dashboard">
+              <Button variant="subtle">Dashboard</Button>
+              </Link>
+
               <Button
                 onClick={() => {
                   document.cookie =
