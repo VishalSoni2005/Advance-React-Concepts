@@ -17,14 +17,13 @@ import { upperFirst } from '@mantine/hooks';
 import { GoogleButton } from './GoogleButton';
 import { TwitterButton } from './TwitterButton';
 
-
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
 
-
-import { addUser, signin, signup } from '../Redux/Slice';
-
-import Cookies from 'js-cookie';
+// import Cookies from 'js-cookie';
+import { addUser } from '../Redux/UserSlice';
+import { setAuth } from '../Redux/AuthSlice';
+// import { setAuth, signin, signup } from '../Redux/Slice';
 
 interface AuthenticationFormProps extends PaperProps {
   type: 'signin' | 'signup';
@@ -54,28 +53,27 @@ export function AuthenticationForm({
       const response = await axios.post(
         `http://localhost:3000/${route}`,
         data,
-        { withCredentials: true }
+        {
+          withCredentials: true,
+        }
       );
 
       const { token } = response.data; // Extract token from response
       const { email, name, profile_img } = response.data.user; // Extract name and email from response
 
-      console.log(response.data);
-      console.log(name);
-            
-      
+      console.log(response.data.user);
+
       if (token) {
-        dispatch(route === 'signin' ? signin(token) : signup(token));
-        dispatch(addUser({name, email, profile_img})); 
-        Cookies.set('authToken', token, { expires: 7 });
+        dispatch(setAuth({ token, email }));
+        dispatch(addUser({ name, email, profile_img }));
+       //  Cookies.set('authToken', token, { expires: 7 });
+       //  Cookies.set('userEmail', email, { expires: 7 }); // Set email in cookies
         navigate('/interface');
-   
       }
     } catch (error) {
       console.error(`Error during ${route}:`, error);
     }
   };
-
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const serverRoute = type === 'signin' ? 'signin' : 'signup';

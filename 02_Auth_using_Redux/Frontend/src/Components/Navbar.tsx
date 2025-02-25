@@ -1,14 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { Group, Button, Container } from '@mantine/core';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../Redux/Store';
-import { logout } from '../Redux/Slice';
+import { useDispatch } from 'react-redux';
+// import { RootState } from '../Redux/Store';
+import { logout } from '../Redux/AuthSlice';
 
 const Navbar: React.FC = () => {
   //todo: note state is stored in store
-  const token = useSelector((state: RootState) => state.auth.token);
-  //  console.log('Token from Redux store:', token);
+  // const token = useSelector((state: RootState) => state.auth.token);
+  // console.log('Token from Redux store:', token);
+  // console.log(document.cookie);
+
+  const token = document.cookie.split('=')[1].split(';')[0];
+  // console.log(token);
 
   const dispatch = useDispatch();
 
@@ -17,7 +21,7 @@ const Navbar: React.FC = () => {
       <Container className="flex justify-between items-center py-4">
         {/* Logo / Home */}
         <Link to="/" className="text-xl font-semibold text-gray-800">
-          Chat App
+          Suck It Gym
         </Link>
 
         {/* Navigation Links */}
@@ -33,18 +37,13 @@ const Navbar: React.FC = () => {
               </Link>
 
               <Link to="/dashboard">
-              <Button variant="subtle">Dashboard</Button>
+                <Button variant="subtle">Dashboard</Button>
               </Link>
 
               <Button
-                onClick={() => {
-                  document.cookie =
-                    'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                  window.location.reload();
-                  dispatch(logout());
-                }}
-                variant="outline"
-                color="red"
+                onClick={() => dispatch(logout())}
+                variant="subtle"
+                color="pink"
               >
                 Logout
               </Button>
