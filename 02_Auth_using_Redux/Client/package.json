@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mantine/core": "^7.17.0",
+    "@mantine/form": "^7.17.0",
+    "@mantine/hooks": "^7.17.0",
+    "@mantinex/dev-icons": "^1.1.0",
     "@tailwindcss/vite": "^4.0.8",
     "axios": "^1.7.9",
     "dayjs": "^1.11.13",
