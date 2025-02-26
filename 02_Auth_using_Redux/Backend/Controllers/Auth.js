@@ -41,19 +41,19 @@ const signup = async (req, res) => {
     const payload = {
       name: newUser.name,
       email: newUser.email,
-
     };
 
     const token = jwt.sign(payload, 'vishal', { expiresIn: '1hr' });
 
-    res.cookie('auth_token', token, {
+    res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      secure: false,
+      // sameSite: 'strict',
+      maxAge: 1 * 60 * 60 * 1000, // 1hr
     });
 
-    // console.log('Token from backend :', token);
+   //  console.log('Token from backend :', token);
+   //  console.log(newUser);
 
     res.status(201).json({
       token,
