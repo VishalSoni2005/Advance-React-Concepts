@@ -17,14 +17,8 @@ import { useForm } from '@mantine/form';
 import { upperFirst } from '@mantine/hooks';
 import { GoogleButton } from './GoogleButton';
 import { TwitterButton } from './TwitterButton';
-
 import { useNavigate } from 'react-router';
-import { useDispatch } from 'react-redux';
-
-// import Cookies from 'js-cookie';
-import { addUser } from '../Redux/UserSlice';
-import { setAuth } from '../Redux/AuthSlice';
-// import { setAuth, signin, signup } from '../Redux/Slice';
+import Cookies from 'js-cookie';
 
 interface AuthenticationFormProps extends PaperProps {
   type: 'signin' | 'signup';
@@ -34,7 +28,6 @@ export function AuthenticationForm({
   type,
   ...props
 }: AuthenticationFormProps) {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const form = useForm({
@@ -51,30 +44,36 @@ export function AuthenticationForm({
     data: typeof form.values
   ) => {
     try {
+      console.log('Sending Data:', data);
+
       const response = await axios.post(
-        `http://localhost:3000/${route}`,
+        `http://localhost:3000/${route}`, 
         data,
         {
-          withCredentials: true,
+          // headers: { 'Content-Type': 'application/json' },
+          withCredentials: true, // Ensure cookies are sent
         }
       );
 
-      const { token } = response.data; // Extract token from response
-      const { email, name, profile_img } = response.data.user; // Extract name and email from response
+      const userData = response.data.user;
+      console.log('User Data:', userData);
+      alert('Login Successful!');
 
-      console.log(response.data.user);
+      const access_token = response.data.token;
+      Cookies.set('access_token', access_token);
+      //* Store user in localStorage
+      localStorage.setItem('user', JSON.stringify(userData));
 
-      if (token) {
-        dispatch(setAuth({ token, email }));
-        dispatch(addUser({ name, email, profile_img }));
-        //  Cookies.set('authToken', token, { expires: 7 });
-        //  Cookies.set('userEmail', email, { expires: 7 }); // Set email in cookies
-        navigate('/interface');
-      }
+      navigate('/dashboard');
     } catch (error) {
-      console.error(`Error during ${route}:`, error);
+      console.error(
+        `Error during ${route}:`,
+        error.response?.data || error.message
+      );
+      alert(error.response?.data?.message || 'Authentication failed');
     }
   };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const serverRoute = type === 'signin' ? 'signin' : 'signup';
