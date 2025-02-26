@@ -14,5 +14,19 @@ router.get('/protected', middleware.authMiddleware, (_, res) => {
   res.json({ message: 'You are authenticated' });
 });
 
+
+// test route
+const jwt = require("jsonwebtoken");
+router.post('/test', async (req, res) => {
+  try {
+    const {name} = req.body;
+    const token = jwt.sign({name: name}, "Vishal", {expiresIn: "1hr"});
+    res.cookie('token', token, { httpOnly: true }); 
+    res.json({ token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 // Export the router
 module.exports = router;
